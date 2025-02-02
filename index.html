@@ -86,6 +86,33 @@
         .page.active {
             display: block;
         }
+        /* New styles for economic data table */
+        .economic-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        .economic-table th,
+        .economic-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .economic-table th {
+            background-color: #333;
+            color: white;
+        }
+        .dark-theme .economic-table th {
+            background-color: #444;
+        }
+        .dark-theme .economic-table td {
+            border-color: #444;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body class="dark-theme">
@@ -96,6 +123,7 @@
     <nav>
         <a href="#" onclick="showPage('home')">Home</a>
         <a href="#" onclick="showPage('about')">About</a>
+        <a href="#" onclick="showPage('economic-data')">Economic Data</a>
         <button class="theme-toggle" onclick="toggleTheme()" id="themeButton">Switch to light theme</button>
     </nav>
 
@@ -106,6 +134,14 @@
 
         <div id="about" class="page">
             <p>Using this site to learn web development</p>
+        </div>
+
+        <div id="economic-data" class="page">
+            <h2>U.S. Unemployment Rates</h2>
+            <p>Monthly U3 unemployment rates for the past 12 months:</p>
+            <div id="unemployment-data">
+                <div class="loading">Loading unemployment data...</div>
+            </div>
         </div>
     </main>
 
@@ -133,6 +169,53 @@
             });
             // Show selected page
             document.getElementById(pageId).classList.add('active');
+            
+            // Load economic data when that page is shown
+            if (pageId === 'economic-data') {
+                loadUnemploymentData();
+            }
+        }
+
+        async function loadUnemploymentData() {
+            const container = document.getElementById('unemployment-data');
+            
+            // Create table structure
+            const table = document.createElement('table');
+            table.className = 'economic-table';
+            
+            // Add table header
+            const header = `
+                <tr>
+                    <th>Date</th>
+                    <th>National</th>
+                    <th>New York City</th>
+                    <th>Los Angeles</th>
+                    <th>Chicago</th>
+                </tr>
+            `;
+            
+            // Sample data (in a real implementation, this would come from an API)
+            const sampleData = [
+                { date: 'Jan 2024', national: '3.7', nyc: '5.2', la: '4.8', chicago: '4.9' },
+                { date: 'Dec 2023', national: '3.7', nyc: '5.3', la: '4.9', chicago: '5.0' },
+                { date: 'Nov 2023', national: '3.7', nyc: '5.4', la: '5.0', chicago: '5.1' },
+                // Add more months...
+            ];
+            
+            // Generate table rows
+            const rows = sampleData.map(month => `
+                <tr>
+                    <td>${month.date}</td>
+                    <td>${month.national}%</td>
+                    <td>${month.nyc}%</td>
+                    <td>${month.la}%</td>
+                    <td>${month.chicago}%</td>
+                </tr>
+            `).join('');
+            
+            table.innerHTML = header + rows;
+            container.innerHTML = '';
+            container.appendChild(table);
         }
 
         // Show home page by default
